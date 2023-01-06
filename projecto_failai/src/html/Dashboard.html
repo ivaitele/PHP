@@ -1,14 +1,25 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Adminpanel</title>
+
+  <style>
+    .debug-error {
+      background: red;
+      color: white;
+      padding: 1em 2em;
+      border-radius: .5em;
+      line-height: 1.6em;
+    }
+  </style>
 </head>
 <body>
-<h1>Sveiki prisijunge</h1>
+<h1>Sveiki prisijunge, {{username}} {{firstName}} </h1>
+<span>Userio tipas: {{userType}}</span> {{loggedInDate}}
 <hr>
 <a href="index.php?logout=true">Atsijungti</a>
-<br>
 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam, aliquid amet aperiam earum eos esse explicabo harum
 illo incidunt iusto minima molestiae nihil omnis perferendis quaerat quas temporibus veniam voluptatibus?
 </body>

@@ -1,16 +1,19 @@
 <?php
 
-namespace IrmisPage;
+//namespace IrmisPage;
 
-use Exception;
+//use Exception;
 
 class IrmisFramework {
+    public function __construct() {
+        $this->user = null;
+        if (isset($_SESSION['user'])) {
+            $this->user = $_SESSION['user'];
+        }
+//        $this->user = ["firstName" => "Irmis", "lastName" => "Vaitele"];
+    }
     public function view($templateName, $data) {
         $templateContent = file_get_contents($templateName.'.html');
-
-        if (!$templateContent) {
-            throw new Exception('Template not found');
-        }
 
         foreach ($data as $key => $value) {
             $value = gettype($value) === 'array' ? join('', $value) : $value ;

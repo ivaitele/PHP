@@ -1,8 +1,9 @@
 <?php
 
-namespace IrmisPage;
+//namespace IrmisPage;
 
-use IrmisPage\IrmisFramework;
+//require_once "../IrmisFramework.php";
+//use IrmisPage\IrmisFramework;
 
 class Home extends IrmisFramework {
     public $template = __DIR__.'/Home';

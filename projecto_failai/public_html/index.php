@@ -1,9 +1,13 @@
 <?php
 
+use Appsas\Authenticator;
+use Appsas\Exceptions\UnauthenticatedException;
+use Appsas\Exceptions\UnknownVariableException;
 use Appsas\FS;
 use Appsas\Output;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Appsas\HtmlRender;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -18,28 +22,22 @@ try {
     $userName = $_POST['username'] ?? null;
     $password = $_POST['password'] ?? null;
 
-    // Vieta kur atliginam vartotoja
-    if($_GET['logout'] ?? false) {
+    // Vieta kur atloginam vartotoja
+    if ($_GET['logout'] ?? false) {
         $_SESSION['logged'] = false;
+        $_SESSION['username'] = null;
     }
 
     // Jei vartotojas prisijunges, tai setinam SESIJA i prisijunges
     // ir Pasisveikinam su lankytoju
-    if (
-        isset($_SESSION['logged']) && $_SESSION['logged'] === true
-        ||
-        ($userName === 'admin' && $password === 'slapta')
-    ) {
-        $_SESSION['logged'] = true;
+    $authenticator = new Authenticator();
+    if ($authenticator->authenticate($userName, $password)) {
 
-// UZDUOTIS: Kazka padaryti kad cia paimtu ir surenderintu Dashboard.html faila
-//        $output->store('Sveiki prisijungę<br><a href="index.php?logout=true">Atsijungti</a><br>');
-
-        $newPage = new FS('../src/html/Dashboard.html');
-        $failoTurinys = $newPage->getFailoTurinys();
-        $failoTurinys = str_replace('Sveiki prisijunge',"Labas prisijunges $userName",$failoTurinys);
-        $output->store($failoTurinys);
+        $render = new HtmlRender($output);
+        $render->render();
+        $render->debug();
     }
+
     // Jei vartotojas neprisijunges, tai rodom prisijungimo forma.
     // Ir jei vartotojas ivede blogus prisijungimus, informuojam ji
     else {
@@ -47,12 +45,17 @@ try {
         $failoSistema = new FS('../src/html/pradzia.html');
         $failoTurinys = $failoSistema->getFailoTurinys();
         $output->store($failoTurinys);
-
-        // Tikrinam ar vartotojas ivede prisijungimo duomenis
-        if ($userName !== null && $password !== null) {
-            $output->store('Neteisingi prisijungimo duomenys');
-        }
     }
+
+
+} catch (UnknownVariableException $e) {
+    $output->store('Atsiprasome, problema su templeitu '.$e->getMessage());
+    $log->warning($e->getMessage());
+
+} catch (UnauthenticatedException $e) {
+    $output->store('Neteisingi prisijungimo duomenys');
+    $log->warning($e->getMessage());
+
 } catch (Exception $e) {
     $output->store('Oi nutiko klaida! Bandyk vėliau dar karta.');
     $log->error($e->getMessage());

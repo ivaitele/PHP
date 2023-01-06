@@ -1,7 +1,7 @@
 <?php
 
-namespace IrmisPage;
-use IrmisPage\IrmisFramework;
+//namespace IrmisPage;
+//use IrmisPage\IrmisFramework;
 
 class AboutUs extends IrmisFramework {
     public $template = __DIR__.'/AboutUs';

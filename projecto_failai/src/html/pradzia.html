@@ -1,18 +1,42 @@
 <!doctype html>
 <html lang="en">
+<style>
+    .debug-error {
+        background: red;
+        color: white;
+        padding: 1em 2em;
+        border-radius: .5em;
+        font-size: .8em;
+    }
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
     <title>Mano portfolio</title>
 </head>
 <body>
+
+<header>
+    Header
+
+    <nav>
+        <a href="index2.php?page=Home">Home</a>
+        <a href="index2.php?page=AboutUs">About Us</a>
+        <a href="index2.php?page=LoginPage">Login</a>
+    </nav>
+</header>
+
 <h1>Sveiki apsilanke mano puslapyje</h1>
 <form action="/" method="post">
     <input type="text" name="username" placeholder="Iveskite savo prisijungimo varda">
-    <input type="text" name="password" placeholder="Nurodykite slaptazodi">
+    <input type="password" name="password" placeholder="Nurodykite slaptazodi">
     <input type="submit" value="Siusti">
 </form>
+
+
+
 </body>
 </html>
