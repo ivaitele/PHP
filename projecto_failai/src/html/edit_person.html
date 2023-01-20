@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio</title>
+</head>
+<body>
+    <h1>Portfolio</h1>
+    <span>Forma</span>
+    <form action="/person/edit" method="post">
+        <input type="text" name="vardas" placeholder="Name" value="{{first_name}}"><br>
+        <input type="text" name="pavarde" placeholder="Surname" value="{{last_name}}"><br>
+        <input type="text" name="email" placeholder="Email" value="{{email}}"><br>
+        <input type="text" name="kodas" placeholder="Asm.k." value="{{code}}"><br>
+        <input type="text" name="tel" placeholder="Tel.nr" value="{{phone}}"><br>
+        <input type="text" name="addr_id" placeholder="Adreso ID" value="{{address_id}}">
+        <hr>
+        <input type="submit" value="Atnaujinti">
+    </form>
+</body>
+</html>

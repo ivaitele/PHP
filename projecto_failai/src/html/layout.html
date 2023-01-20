@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<style>
+    .debug-error {
+        background: red;
+        color: white;
+        padding: 1em 2em;
+        border-radius: .5em;
+        font-size: .8em;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/page.css">
+    <title>Mano portfolio</title>
+</head>
+<body>
+
+<div class="layout">
+    <div class="layout__header">HEADER
+
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/persons">Persons</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="layout__content">{{body}}</div>
+
+    <div class="layout__footer">Footer</div>
+</div>
+
+
+
+</body>
+</html>

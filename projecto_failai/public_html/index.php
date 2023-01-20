@@ -1,64 +1,48 @@
 <?php
 
 use Appsas\Authenticator;
-use Appsas\Exceptions\UnauthenticatedException;
-use Appsas\Exceptions\UnknownVariableException;
-use Appsas\FS;
+use Appsas\Controllers\AdminController;
+use Appsas\Controllers\KontaktaiController;
+use Appsas\Controllers\PersonController;
+use Appsas\Controllers\PradziaController;
+use Appsas\ExceptionHandler;
 use Appsas\Output;
+use Appsas\Router;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Appsas\HtmlRender;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/larapack/dd/src/helper.php';
 
 $log = new Logger('Portfolios');
-$log->pushHandler(new StreamHandler('../logs/klaidos.log', Logger::WARNING));
+$log->pushHandler(new StreamHandler('../logs/klaidos.log', Logger::INFO));
 
 $output = new Output();
 
 try {
     session_start();
 
-    $userName = $_POST['username'] ?? null;
-    $password = $_POST['password'] ?? null;
-
-    // Vieta kur atloginam vartotoja
-    if ($_GET['logout'] ?? false) {
-        $_SESSION['logged'] = false;
-        $_SESSION['username'] = null;
-    }
-
-    // Jei vartotojas prisijunges, tai setinam SESIJA i prisijunges
-    // ir Pasisveikinam su lankytoju
     $authenticator = new Authenticator();
-    if ($authenticator->authenticate($userName, $password)) {
+    $adminController = new AdminController($authenticator);
+    $kontaktaiController = new KontaktaiController($log);
 
-        $render = new HtmlRender($output);
-        $render->render();
-        $render->debug();
-    }
-
-    // Jei vartotojas neprisijunges, tai rodom prisijungimo forma.
-    // Ir jei vartotojas ivede blogus prisijungimus, informuojam ji
-    else {
-        // Nuskaitomas HTML failas ir siunciam jo teksta i Output klase
-        $failoSistema = new FS('../src/html/pradzia.html');
-        $failoTurinys = $failoSistema->getFailoTurinys();
-        $output->store($failoTurinys);
-    }
-
-
-} catch (UnknownVariableException $e) {
-    $output->store('Atsiprasome, problema su templeitu '.$e->getMessage());
-    $log->warning($e->getMessage());
-
-} catch (UnauthenticatedException $e) {
-    $output->store('Neteisingi prisijungimo duomenys');
-    $log->warning($e->getMessage());
-
-} catch (Exception $e) {
-    $output->store('Oi nutiko klaida! Bandyk vėliau dar karta.');
-    $log->error($e->getMessage());
+    $router = new Router();
+    $router->addRoute('GET', '', [new PradziaController(), 'index']);
+    $router->addRoute('GET', 'admin', [$adminController, 'index']);
+    $router->addRoute('POST', 'login', [$adminController, 'login']);
+    $router->addRoute('GET', 'kontaktai', [$kontaktaiController, 'index']);
+    $router->addRoute('GET', 'persons', [new PersonController(), 'index']);
+    $router->addRoute('GET', 'persons/new', [new PersonController(), 'new']);
+    $router->addRoute('POST', 'persons', [new PersonController(), 'postNew']);
+    $router->addRoute('GET', 'persons/delete', [new PersonController(), 'delete']);
+    $router->addRoute('GET', 'persons/edit', [new PersonController(), 'edit']);
+    $router->addRoute('POST', 'persons/edit', [new PersonController(), 'postEdit']);
+    $router->addRoute('GET', 'logout', [$adminController, 'logout']);
+    $router->run();
+}
+catch (Exception $e) {
+    $handler = new ExceptionHandler($output, $log);
+    $handler->handle($e);
 }
 
 // Spausdinam viska kas buvo 'Storinta' Output klaseje

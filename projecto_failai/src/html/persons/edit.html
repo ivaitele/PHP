@@ -1,0 +1,38 @@
+<h1>Edit</h1>
+
+<form action="/persons/edit?id={{id}}" method="post">
+    <div class="form-item">
+        <label for="first_name">Vardas</label>
+        <input id="first_name" type="text" name="first_name" placeholder="Name" value="{{first_name}}">
+    </div>
+
+    <div class="form-item">
+        <label>Pavarde</label>
+        <input type="text" name="last_name" placeholder="Surname" value="{{last_name}}"><br>
+
+    </div>
+
+    <div class="form-item">
+        <label>Email</label>
+
+        <input type="text" name="email" placeholder="Email" value="{{email}}"><br>
+    </div>
+
+    <div class="form-item">
+        <label>Code</label>
+        <input type="text" name="code" placeholder="Asm.k." value="{{code}}"><br>
+    </div>
+
+    <div class="form-item">
+        <label>Tel</label>
+        <input type="text" name="phone" placeholder="Tel.nr" value="{{phone}}"><br>
+    </div>
+
+    <div class="form-item">
+        <label>Adresas</label>
+        <input type="text" name="address_id" placeholder="Adreso ID" value="{{address_id}}">
+
+    </div>
+    <input type="submit" value="Atnaujinti">
+</form>
+

@@ -38,4 +38,21 @@ class HtmlRender extends AbstractRender
 
         return $failoTurinys;
     }
+
+    //------------------------------------------------------------
+    public function __construct($templatePath, $arr){
+        return $this->render($templatePath, $arr);
+    }
+
+    //------------------------------------------------------------
+    public function render($templatePath, $arr) {
+        $nesamone = new FS('../src/html/'.templatePath.'.html');
+        $content = $nesamone->getFailoTurinys();
+
+        foreach (arr as $key => $value) {
+            $content = str_replace('{{' . $key . '}}', $value, $content);
+        }
+
+        return $content;
+    }
 }

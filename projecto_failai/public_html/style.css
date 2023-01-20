@@ -3,6 +3,80 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
+    font-family: sans-serif;
+}
+
+.layout {
+    display: flex;
+
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout__content {
+    flex: 1;
+}
+
+.layout__header {
+    background: grey;
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.layout__footer {
+    background: grey;
+    padding: 1em;
+
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+td {
+    padding: .5em;
+}
+
+nav ul {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+}
+
+input {
+    border: solid 1px grey;
+    padding: .5em 1em;
+    outline: none;
+}
+
+.form-item {
+    display: flex;
+    align-items: center;
+    margin: .5em;
+}
+
+.form-item label{
+    width: 150px;
+}
+
+/* Add a black background color to the top navigation */
+.topnav {
+    background-color: #333;
+    overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
 }
 
 header {

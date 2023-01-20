@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<style>
+    .debug-error {
+        background: red;
+        color: white;
+        padding: 1em 2em;
+        border-radius: .5em;
+        font-size: .8em;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Mano portfolio</title>
+</head>
+<body>
+
+<div class="topnav">
+    <a href="/src/html/pradzia.html">Home</a>
+    <a href="/src/html/AboutMe.html">About Me</a>
+    <a href="/src/html/projects.html">Projektai</a>
+    <a href="./kontaktai.html">Kontaktai</a>
+</div>
+
+
+<h1>Kontaktų puslapis</h1>
+
+<div class="container">
+    <form action="action_page.php">
+
+        <label for="fname">Vardas</label>
+        <input type="text" id="fname" name="firstname" placeholder="Jūsų vardas">
+
+        <label for="lname">Pavardė</label>
+        <input type="text" id="lname" name="lastname" placeholder="Pavardė">
+
+        <label for="email">El.paštas</label>
+        <input type="text" id="email" name="email" placeholder="Email">>
+
+        <label for="subject">Jūsų žinutė</label>
+        <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
+
+        <input type="submit" value="Siūsti">
+
+    </form>
+</div>
+
+
+</body>
+</html>
