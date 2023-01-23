@@ -34,6 +34,7 @@ try {
     $router->addRoute('GET', 'persons', [new PersonController(), 'index']);
     $router->addRoute('GET', 'persons/new', [new PersonController(), 'new']);
     $router->addRoute('POST', 'persons', [new PersonController(), 'postNew']);
+    $router->addRoute('GET', 'persons/show', [new PersonController(), 'show']);
     $router->addRoute('GET', 'persons/delete', [new PersonController(), 'delete']);
     $router->addRoute('GET', 'persons/edit', [new PersonController(), 'edit']);
     $router->addRoute('POST', 'persons/edit', [new PersonController(), 'postEdit']);

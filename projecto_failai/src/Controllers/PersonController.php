@@ -32,6 +32,16 @@ class PersonController
         return View::one('persons/persons', ['personsRows' => $personsRows]);
     }
 
+    public function show()
+    {
+        $id = (int)$_GET['id'] ?? null;
+
+        $person = $this->query("SELECT * FROM `persons` WHERE `id` = :id", ['id' => $id]);
+
+        return View::one('/persons/show', $person[0]);
+    }
+
+
     public function new()
     {
         return View::one('persons/create', []);
@@ -39,24 +49,30 @@ class PersonController
 
     public function postNew()
     {
-        $vardas = $_POST['vardas'] ?? '';
-        $pavarde = $_POST['pavarde'] ?? '';
-        $kodas = (int)$_POST['kodas'] ?? '';
+        $first_name = $_POST['first_name'] ?? '';
+        $last_name = $_POST['last_name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $code = $_POST['code'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $address_id = (int)$_POST['address_id'] ?? '';
 
-        Validator::required($vardas);
-        Validator::required($pavarde);
-        Validator::required($kodas);
-        Validator::numeric($kodas);
-        Validator::asmensKodas($kodas);
+        Validator::required($first_name);
+        Validator::required($last_name);
+        Validator::required($code);
+        Validator::numeric($code);
+        Validator::asmensKodas($code);
 
 
         $this->query(
-            "INSERT INTO `persons` (`first_name`, `last_name`, `code`)
-                    VALUES (:vardas, :pavarde, :kodas)",
+            "INSERT INTO `persons` (`first_name`, `last_name`, `email`,`code`, `phone`, `address_id`)
+                    VALUES (:first_name, :last_name, :email, :code, :phone, :address_id)",
             [
-                'vardas' => $vardas,
-                'pavarde' => $pavarde,
-                'kodas' => $kodas,
+                'first_name' => $first_name,
+                'first_name' => $last_name,
+                'email' => $email,
+                'code' => $code,
+                'phone' => $phone,
+                'address_id' => $address_id,
             ]
         );
         header("Location: http://localhost/persons");
@@ -98,34 +114,25 @@ class PersonController
         $data = [
             'first_name' => $_POST['first_name'] ?? '',
             'last_name' => $_POST['last_name'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'code' => $_POST['code'] ?? '',
+            'phone' => $_POST['phone'] ?? '',
+            'address_id' => $_POST['address_id'] ?? '',
             'id' => $_GET['id']
         ];
 
-        $this->query('UPDATE persons SET first_name = :first_name, last_name = :last_name WHERE id = :id', $data);
+//        Validator::required($first_name);
+//        Validator::required($last_name);
+//        Validator::numeric($code);
+//        Validator::asmensKodas($code);
+
+        $this->query('UPDATE persons SET first_name = :first_name, last_name = :last_name, 
+                   email = :email, code = :code, phone =:phone, address_id =:address_id WHERE id = :id', $data);
 
         $this->redirect('/persons');
 
 //        return $this->edit();
     }
 
-    public function update()
-    {
-        $id = (int)$_GET['id'] ?? null;
 
-        $vardas = $_POST['vardas'] ?? '';
-        $pavarde = $_POST['pavarde'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $kodas = (int)$_POST['kodas'] ?? '';
-        $tel = $_POST['tel'] ?? '';
-        $addr_id = $_POST['addr_id'] ?? '';
-
-        $conf = new Configs();
-        $db = new Database($conf);
-
-        $db->query(
-            "UPDATE  `persons` 
-            SET (`$vardas`, `$pavarde`, `$email`, '$kodas', '$tel', '$addr_id') WHERE id ='$id'");
-
-
-    }
 }

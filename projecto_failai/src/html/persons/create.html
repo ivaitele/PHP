@@ -1,8 +1,37 @@
 <h1>Portfolio</h1>
-<span>Forma 123</span>
+<span>Sukurti nauja vartotoja</span>
 <form action="/persons" method="post">
-    <input type="text" name="vardas" placeholder="Name">
-    <input type="text" name="pavarde" placeholder="Surname">
-    <input type="text" name="kodas" placeholder="Kodas">
-    <input type="submit" value="Submit">
+    <div class="form-item">
+        <label for="first_name">Vardas</label>
+        <input id="first_name" type="text" name="first_name" placeholder="Name">
+    </div>
+
+    <div class="form-item">
+        <label>Pavarde</label>
+        <input type="text" name="last_name" placeholder="Surname"><br>
+
+    </div>
+
+    <div class="form-item">
+        <label>Email</label>
+
+        <input type="text" name="email" placeholder="Email"><br>
+    </div>
+
+    <div class="form-item">
+        <label>Code</label>
+        <input type="text" name="code" placeholder="Asm.k."><br>
+    </div>
+
+    <div class="form-item">
+        <label>Tel</label>
+        <input type="text" name="phone" placeholder="Tel.nr"><br>
+    </div>
+
+    <div class="form-item">
+        <label>Adresas</label>
+        <input type="text" name="address_id" placeholder="Adreso ID">
+
+    </div>
+    <input type="submit" value="Sukurti">
 </form>
