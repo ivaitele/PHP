@@ -3,86 +3,63 @@
 namespace Appsas\Controllers;
 
 use Appsas\Database;
-use Appsas\View;
+use Appsas\FS;
+use Appsas\Request;
+use Appsas\Response;
 use Appsas\Validator;
 use Appsas\Configs;
 
-class PersonController
+class PersonController extends BaseController
 {
-    private function query($str, $arr)
+    public const TITLE = 'Asmenys';
+
+    public function list(Request $request): Response
     {
+        $config = new Configs();
+        $db = new Database($config);
+
+        $kiekis = $request->get('amount', 10);
+        $orderBy = $request->get('orderby', 'id');
+
+        $asmenys = $db->query('SELECT p.*, concat(c.title, \' - \', a.city, \' - \', a.street, \' - \', a.postcode) address
+FROM persons p
+    LEFT JOIN addresses a on p.address_id = a.id 
+    LEFT JOIN countries c on a.country_iso = c.iso 
+ORDER BY ' . $orderBy . ' DESC LIMIT ' . $kiekis);
+
+        $rez = $this->generatePersonsTable($asmenys);
+
+        return $this->render('person/list', $rez);
+    }
+
+    public function new(): Response
+    {
+        return $this->render('person/new');
+    }
+
+    public function store(Request $request): Response
+    {
+        Validator::required($request->get('first_name'));
+        Validator::required($request->get('last_name'));
+        Validator::required((int)$request->get('code'));
+        Validator::numeric((int)$request->get('code'));
+        Validator::asmensKodas((int)$request->get('code'));
+
         $conf = new Configs();
         $conn = new Database($conf);
 
-        return $conn->query($str, $arr);
-    }
-
-    private function redirect($url)
-    {
-        header("Location: http://localhost" . $url);
-
-    }
-
-    public function index()
-    {
-        $limit = $_GET['amount'] ?? 10;
-        $asmenys = $this->query('SELECT * FROM persons ORDER BY id DESC LIMIT ' . $limit, []);
-
-        $personsRows = View::many('persons/table_row', $asmenys);
-        return View::one('persons/persons', ['personsRows' => $personsRows]);
-    }
-
-    public function show()
-    {
-        $id = (int)$_GET['id'] ?? null;
-
-        $person = $this->query("SELECT * FROM `persons` WHERE `id` = :id", ['id' => $id]);
-
-        return View::one('/persons/show', $person[0]);
-    }
-
-
-    public function new()
-    {
-        return View::one('persons/create', []);
-    }
-
-    public function postNew()
-    {
-        $first_name = $_POST['first_name'] ?? '';
-        $last_name = $_POST['last_name'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $code = $_POST['code'] ?? '';
-        $phone = $_POST['phone'] ?? '';
-        $address_id = (int)$_POST['address_id'] ?? '';
-
-        Validator::required($first_name);
-        Validator::required($last_name);
-        Validator::required($code);
-        Validator::numeric($code);
-        Validator::asmensKodas($code);
-
-
-        $this->query(
-            "INSERT INTO `persons` (`first_name`, `last_name`, `email`,`code`, `phone`, `address_id`)
-                    VALUES (:first_name, :last_name, :email, :code, :phone, :address_id)",
-            [
-                'first_name' => $first_name,
-                'first_name' => $last_name,
-                'email' => $email,
-                'code' => $code,
-                'phone' => $phone,
-                'address_id' => $address_id,
-            ]
+        $conn->query(
+            "INSERT INTO `persons` (`first_name`, `last_name`, `code`)
+                    VALUES (:first_name, :last_name, :code)",
+            $request->all()
         );
-        header("Location: http://localhost/persons");
 
-//        return "New record created successfully";
+        return $this->redirect('/persons', ['message' => "Record created successfully"]);
     }
 
-    public function delete()
+    public function delete(Request $request): Response
     {
-        $kuris = (int)$_GET['id'] ?? null;
+        $kuris = (int)$request->get('id');
 
         Validator::required($kuris);
         Validator::numeric($kuris);
@@ -93,46 +70,91 @@ class PersonController
 
         $db->query("DELETE FROM `persons` WHERE `id` = :id", ['id' => $kuris]);
 
-        return "Record deleted successfully";
+        return $this->redirect('/persons', ['message' => "Record deleted successfully"]);
     }
 
-    public function edit()
+    public function edit(Request $request): Response
     {
-        $id = (int)$_GET['id'] ?? null;
+        $conf = new Configs();
+        $db = new Database($conf);
 
-        Validator::required($id);
-        Validator::numeric($id);
-        Validator::min($id, 1);
+        $person = $db->query("SELECT * FROM `persons` WHERE `id` = :id", ['id' => $request->get('id')])[0];
 
-        $person = $this->query("SELECT * FROM `persons` WHERE `id` = :id", ['id' => $id]);
-
-        return View::one('/persons/edit', $person[0]);
+        return $this->render('person/edit', $person);
     }
 
-    public function postEdit()
+    public function update(Request $request): Response
     {
-        $data = [
-            'first_name' => $_POST['first_name'] ?? '',
-            'last_name' => $_POST['last_name'] ?? '',
-            'email' => $_POST['email'] ?? '',
-            'code' => $_POST['code'] ?? '',
-            'phone' => $_POST['phone'] ?? '',
-            'address_id' => $_POST['address_id'] ?? '',
-            'id' => $_GET['id']
-        ];
+        Validator::required($request->get('first_name'));
+        Validator::required($request->get('last_name'));
+        Validator::required($request->get('code'));
+        Validator::numeric($request->get('code'));
+        Validator::asmensKodas($request->get('code'));
 
-//        Validator::required($first_name);
-//        Validator::required($last_name);
-//        Validator::numeric($code);
-//        Validator::asmensKodas($code);
+        $conf = new Configs();
+        $db = new Database($conf);
 
-        $this->query('UPDATE persons SET first_name = :first_name, last_name = :last_name, 
-                   email = :email, code = :code, phone =:phone, address_id =:address_id WHERE id = :id', $data);
+        $db->query(
+            "UPDATE `persons` 
+                    SET `first_name` = :first_name, 
+                        `last_name` = :last_name, 
+                        `code` = :code, 
+                        `email` = :email,          
+                        `phone` = :phone, 
+                        `address_id` = :address_id 
+                    WHERE `id` = :id",
+            $request->all()
+        );
 
-        $this->redirect('/persons');
-
-//        return $this->edit();
+        return $this->redirect('/person/show?id='.$request->get('id'), ['message' => "Record updated successfully"]);
     }
 
+    public function show(Request $request): Response
+    {
+        $conf = new Configs();
+        $db = new Database($conf);
 
+        $person = $db->query("SELECT * FROM `persons` WHERE `id` = :id", ['id' => $request->get('id')])[0];
+
+        return $this->render('person/show', $person);
+    }
+
+    /**
+     * @param mixed $asmuo
+     * @return string
+     */
+    protected function generatePersonRow(array $asmuo): string
+    {
+        $failoSistema = new FS('../src/html/person/person_row.html');
+        $failoTurinys = $failoSistema->getFailoTurinys();
+        foreach ($asmuo as $key => $item) {
+            $failoTurinys = str_replace("{{" . $key . "}}", $item, $failoTurinys);
+        }
+
+        return $failoTurinys;
+    }
+
+    /**
+     * @param array $asmenys
+     * @return string
+     */
+    protected function generatePersonsTable(array $asmenys): string
+    {
+        $rez = '<table class="highlight striped">
+            <tr>
+                <th>ID</th>
+                <th>Vardas</th>
+                <th>Pavarde</th>
+                <th>Emailas</th>
+                <th>Asmens kodas</th>
+                <th><a href="/persons?orderby=phone">TEl</a></th>
+                <th>Addr.ID</th>
+                <th>Veiksmai</th>
+            </tr>';
+        foreach ($asmenys as $asmuo) {
+            $rez .= $this->generatePersonRow($asmuo);
+        }
+        $rez .= '</table>';
+        return $rez;
+    }
 }

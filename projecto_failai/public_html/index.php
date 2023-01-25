@@ -25,26 +25,25 @@ try {
     $authenticator = new Authenticator();
     $adminController = new AdminController($authenticator);
     $kontaktaiController = new KontaktaiController($log);
+    $personController = new PersonController();
 
-    $router = new Router();
+    $router = new Router($output);
     $router->addRoute('GET', '', [new PradziaController(), 'index']);
     $router->addRoute('GET', 'admin', [$adminController, 'index']);
     $router->addRoute('POST', 'login', [$adminController, 'login']);
-    $router->addRoute('GET', 'kontaktai', [$kontaktaiController, 'index']);
-    $router->addRoute('GET', 'persons', [new PersonController(), 'index']);
-    $router->addRoute('GET', 'persons/new', [new PersonController(), 'new']);
-    $router->addRoute('POST', 'persons', [new PersonController(), 'postNew']);
-    $router->addRoute('GET', 'persons/show', [new PersonController(), 'show']);
-    $router->addRoute('GET', 'persons/delete', [new PersonController(), 'delete']);
-    $router->addRoute('GET', 'persons/edit', [new PersonController(), 'edit']);
-    $router->addRoute('POST', 'persons/edit', [new PersonController(), 'postEdit']);
     $router->addRoute('GET', 'logout', [$adminController, 'logout']);
+    $router->addRoute('GET', 'kontaktai', [$kontaktaiController, 'index']);
+    $router->addRoute('GET', 'persons', [$personController, 'list']);
+    $router->addRoute('GET', 'person/new', [$personController, 'new']);
+    $router->addRoute('GET', 'person/delete', [$personController, 'delete']);
+    $router->addRoute('GET', 'person/edit', [$personController, 'edit']);
+    $router->addRoute('GET', 'person/show', [$personController, 'show']);
+    $router->addRoute('POST', 'person', [$personController, 'store']);
+    $router->addRoute('POST', 'person/update', [$personController, 'update']);
     $router->run();
 }
 catch (Exception $e) {
     $handler = new ExceptionHandler($output, $log);
     $handler->handle($e);
+    $output->print();
 }
-
-// Spausdinam viska kas buvo 'Storinta' Output klaseje
-$output->print();

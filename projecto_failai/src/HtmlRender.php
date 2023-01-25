@@ -2,57 +2,41 @@
 
 namespace Appsas;
 
-use Appsas\Exceptions\UnknownVariableException;
-use Appsas\FS;
-
 class HtmlRender extends AbstractRender
 {
-    protected function getContent(): string
+    public function setContent(mixed $content)
     {
-        $failoSistema = new FS('../src/html/Dashboard.html');
-        $failoTurinys = $failoSistema->getFailoTurinys();
+        $fileContent = self::renderTemplate('layout/main', $content);
 
-        $duomMas = [
-            'username' => $_SESSION['username'],
-            'userType' => 'Admin',
-            'loggedInDate' => date('Y-m-d H:i:s'),
-            'klaida' => 'Turi ismest klaida'
-        ];
+        $this->output->store($fileContent);
+    }
 
-        $paramsNotFound = Array();
-
-        foreach ($duomMas as $key => $value) {
-            $found = strpos($failoTurinys,'{{' . $key . '}}');
-
-            if ($found === false) {
-                $paramsNotFound[$key] = $value;
+    /**
+     * @param string $template
+     * @param mixed $content
+     * @return string
+     */
+    public static function renderTemplate(string $template, mixed $content = null): string
+    {
+        // Iš kontrolerio funkcijos gautą atsakymą talpiname į main.html layout failą
+        $fs = new FS("../src/html/$template.html");
+        $fileContent = $fs->getFailoTurinys();
+//        $title = $this->controller::TITLE;
+//        $fileContent = str_replace("{{title}}", $title, $fileContent);
+        if (is_array($content)) {
+            foreach ($content as $key => $item) {
+                $fileContent = str_replace("{{{$key}}}", $item, $fileContent);
             }
-
-            $failoTurinys = str_replace('{{' . $key . '}}', $value, $failoTurinys);
+        } elseif (is_string($content)) {
+            $fileContent = str_replace("{{content}}", $content, $fileContent);
         }
 
-//        $this->errorArr = $paramsNotFound;
-       if (count($paramsNotFound)) {
-            throw new UnknownVariableException($paramsNotFound);
+        // Išvalomi Templeituose likę {{}} tagai
+        preg_match_all('/{{(.*?)}}/', $fileContent, $matches);
+        foreach ($matches[0] as $key) {
+            $fileContent = str_replace($key, '', $fileContent);
         }
 
-        return $failoTurinys;
-    }
-
-    //------------------------------------------------------------
-    public function __construct($templatePath, $arr){
-        return $this->render($templatePath, $arr);
-    }
-
-    //------------------------------------------------------------
-    public function render($templatePath, $arr) {
-        $nesamone = new FS('../src/html/'.templatePath.'.html');
-        $content = $nesamone->getFailoTurinys();
-
-        foreach (arr as $key => $value) {
-            $content = str_replace('{{' . $key . '}}', $value, $content);
-        }
-
-        return $content;
+        return $fileContent;
     }
 }

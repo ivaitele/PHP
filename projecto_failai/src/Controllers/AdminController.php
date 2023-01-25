@@ -4,49 +4,50 @@ namespace Appsas\Controllers;
 
 use Appsas\Authenticator;
 use Appsas\Exceptions\UnauthenticatedException;
-use Appsas\HtmlRender;
+use Appsas\Request;
+use Appsas\Response;
 
-class AdminController
+class AdminController extends BaseController
 {
     private Authenticator $authenticator;
-
+    // BAD PRACTICE: DI metu priskirti numatytasias (Default) reiksmes
     public function __construct(Authenticator $authenticator = null)
     {
         $this->authenticator = $authenticator ?? new Authenticator();
+        parent::__construct();
     }
 
     /**
      * @throws UnauthenticatedException
      */
-    public function index()
+    public function index(): Response
     {
         if (!$this->authenticator->isLoggedIn()) {
             throw new UnauthenticatedException();
         }
 
-        return 'ADMIN puslapis';
-//        $render = new HtmlRender($output);
-//        $render->render();
+        return $this->response('Admin puslapis! ' . $_SESSION['username']);
     }
 
     /**
      * @throws UnauthenticatedException
      */
-    public function login()
+    public function login(Request $request): Response
     {
-        $userName = $_POST['username'] ?? null;
-        $password = $_POST['password'] ?? null;
+        $userName = $request->get('username');
+        $password = $request->get('password');
 
-        if(!empty($userName) && !empty($password)) {
-            $this->authenticator->login($userName, $password);
-            header('Location: /admin');
+        if(empty($userName) && empty($password)) {
+            return $this->redirect('/', ['message' => 'Nesupildyti prisijungimo duomenys']);
         }
+
+        $this->authenticator->login($userName, $password);
+        return $this->redirect('/admin', ['message' => 'Sveikiname prisijungus']);
     }
 
-
-    public function logout()
+    public function logout(): Response
     {
         $this->authenticator->logout();
-        return '';
+        return $this->redirect('/', ['message' => 'Sveikiname atsijungus']);
     }
 }
